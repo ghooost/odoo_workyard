@@ -1,0 +1,17 @@
+{
+  "name": "price-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "watch.js",
+  "scripts": {
+    "watch": "node watch.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "node-ssh": "^5.0.0",
+    "node-watch": "^0.5.5"
+  }
+}
