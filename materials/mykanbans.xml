@@ -1,0 +1,160 @@
+<!-- <record model="ir.ui.view" id="handlbook.ghostpl_item">
+  <field name="name">edit pricelists</field>
+  <field name="model">handlbook.ghostpl</field>
+  <field name="arch" type="xml">
+    <form string="item">
+      <field name="id" invisible="1"/>
+      <field name="is_new" invisible="1"/>
+      <sheet>
+        <h1 attrs="{'invisible': [('is_new', '=', False)]}">Create pricelist</h1>
+        <h1 attrs="{'invisible': [('is_new', '=', True)]}">Edit pricelist</h1>
+        <group>
+          <field name="name"/>
+          <field name="ptype"/>
+          <field name="based_on" attrs="{'invisible': [('is_new', '=', False)]}"/>
+        </group>
+        <group attrs="{'invisible': [('is_new', '=', False)]}">
+          <field name="based_on" model="handlbook.ghostpl"/>
+        </group>
+        <group attrs="{'invisible': [('ptype', 'in', ['3','4'])]}">
+          <field colspna="2" name="discount" size="4" attrs="{'invisible': [('id', '==', 'None')]}"/>
+        </group>
+      </sheet>
+      <sheet attrs="{'invisible': [('is_new', '=', True)]}">
+        <group>
+          <h1 colspan="2">Tech reglaments</h1>
+        </group>
+        <field name="reg_ids" mode="kanban" attrs="{'readonly': [('ptype', 'not in', ['1','2'])]}">
+          <kanban>
+            <templates>
+              <t t-name="reg_scheme">
+                <tr>
+                  <td><t t-raw="name"/></td>
+                  <td style="width:110px;text-align:right" >
+                      <input
+                      type="text"
+                      name="fixauto"
+                      class="o_form_input o_form_field"
+                      style="width:100px;box-sizing:border-box;text-align:right;"
+                      t-att-value="price.value"
+                      />
+                  </td>
+                </tr>
+              </t>
+              <t t-name="reg_basic">
+                <tr>
+                  <td colspan="2">
+                    <h1><field name="name"/></h1>
+                    <p><field name="comment"/></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <h2>DS <field name="ds_register"/></h2>
+                    <p><field name="ds_comment"/></p>
+                  </td>
+                </tr>
+                <t t-call="reg_scheme">
+                  <t t-set="name" t-value="1ds"/>
+                  <t t-set="price" t-value="record.ds_scheme_1"/>
+                </t>
+                <t t-call="reg_scheme">
+                  <t t-set="name" t-value="2ds"/>
+                  <t t-set="price" t-value="record.ds_scheme_2"/>
+                </t>
+              </t>
+
+              <t t-name="reg_client">
+              </t>
+
+              <t t-name="kanban-box">
+                <div class="card-content" style="display:block;padding:5px 0;flex:1 1 100%;">
+                    <t t-if="record.pricelist_ptype.value == 1 || record.pricelist_ptype.value == 2">
+                      <t t-call="reg_basic"/>
+                    </t>
+                    <t t-if="record.pricelist_ptype.value == 3 || record.pricelist_ptype.value == 4">
+                      <t t-call="reg_client"/>
+                    </t>
+                </div>
+              </t>
+            </templates>
+          </kanban>
+        </field>
+      </sheet>
+      <sheet attrs="{'invisible': [('is_new', '=', True)]}">
+        <group>
+          <h1 colspan="2">Extra services</h1>
+        </group>
+
+        <field name="extra_service_ids" mode="tree">
+          <tree>
+            <field name="name"/>
+            <field name="price"/>
+          </tree>
+        </field>
+
+        <field name="extra_service_ids" mode="kanban" attrs="{'readonly': [('ptype', 'not in', ['1','2'])]}">
+          <kanban>
+            <field name="price_to_show"/>
+            <field name="pricelist_ptype"/>
+            <templates>
+
+              <t t-name="basic">
+                <tr>
+                  <td><field name="name"/></td>
+                  <td style="width:110px;text-align:right" >
+                      <input
+                      type="text"
+                      name="fixauto"
+                      class="o_form_input o_form_field"
+                      style="width:100px;box-sizing:border-box;text-align:right;"
+                      t-att-value="record.price_to_show.value"
+                      t-att-data-id="record.id.value"
+                      data-rpc="price"/>
+                  </td>
+                  <t t-if="read_only_mode == false">
+                    <td style="width:30px;text-align:center">
+                      <button type="delete">x</button>
+                    </td>
+                  </t>
+                </tr>
+              </t>
+
+              <t t-name="client">
+                <tr>
+                  <td><field name="name"/></td>
+                  <td style="width:110px;text-align:right" >
+                    <field name="price_to_show"/>
+                  </td>
+                </tr>
+              </t>
+
+              <t t-name="kanban-box">
+                <div class="card-content" style="display:block;padding:5px 0;flex:1 1 100%;">
+                  <table style="padding:0;margin:0;border:0;table-layout:fixed;width:100%">
+                    <t t-if="record.pricelist_ptype.value == 1 || record.pricelist_ptype.value == 2">
+                      <t t-call="basic"/>
+                    </t>
+                    <t t-if="record.pricelist_ptype.value == 3 || record.pricelist_ptype.value == 4">
+                      <t t-call="client"/>
+                    </t>
+                  </table>
+                  <t t-log="'-----------------------'"/>
+                  <t t-log="widget"/>
+                  <t t-log="record"/>
+                  <t t-log="formats"/>
+                  <t t-log="read_only_mode"/>
+                  <t t-log="'-----------------------'"/>
+                </div>
+              </t>
+            </templates>
+          </kanban>
+        </field>
+
+      </sheet>
+    </form>
+  </field>
+</record> -->

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="TestWidget">
+        <div>
+          <h1>Widget!</h1>
+        </div>
+    </t>
+</templates>

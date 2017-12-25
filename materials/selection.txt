@@ -1,0 +1,172 @@
+var FieldSelection = common.AbstractField.extend(common.ReinitializeFieldMixin, {
+    template: 'FieldSelection',
+    events: {
+        'change': 'store_dom_value',
+    },
+    init: function(field_manager, node) {
+        this._super(field_manager, node);
+        this.set("value", false);
+        this.set("values", []);
+        this.records_orderer = new utils.DropMisordered();
+        this.field_manager.on("view_content_has_changed", this, function() {
+            var domain = new data.CompoundDomain(this.build_domain()).eval();
+            if (!_.isEqual(domain, this.get("domain"))) {
+                this.set("domain", domain);
+            }
+        });
+    },
+    initialize_field: function() {
+        common.ReinitializeFieldMixin.initialize_field.call(this);
+        this.on("change:domain", this, this.query_values);
+        this.set("domain", new data.CompoundDomain(this.build_domain()).eval());
+        this.on("change:values", this, this.render_value);
+    },
+    query_values: function() {
+        var self = this;
+        var def;
+        if (this.field.type === "many2one") {
+            var model = new Model(this.field.relation);
+            def = model.call("name_search", ['', this.get("domain")], {
+                "context": this.build_context()
+            });
+        } else {
+            var values = _.reject(this.field.selection, function(v) {
+                return v[0] === false && v[1] === '';
+            });
+            def = $.when(values);
+        }
+        this.records_orderer.add(def).then(function(values) {
+            if (!_.isEqual(values, self.get("values"))) {
+                self.set("values", values);
+            }
+        });
+    },
+    initialize_content: function() {
+        if (!this.get('effective_readonly')) {
+            var ischanging = false;
+            this.$el.change(function() {
+                ischanging = true;
+            }).click(function() {
+                ischanging = false;
+            }).keyup(function(e) {
+                if (e.which !== 13 || !ischanging) {
+                    return;
+                }
+                e.stopPropagation();
+                ischanging = false;
+            });
+            this.setupFocus(this.$el);
+        }
+    },
+    commit_value: function() {
+        this.store_dom_value();
+        return this._super();
+    },
+    store_dom_value: function() {
+        if (!this.get('effective_readonly')) {
+            this.internal_set_value(JSON.parse(this.$el.val()));
+        }
+    },
+    set_value: function(value_) {
+        value_ = value_ === null ? false : value_;
+        value_ = value_ instanceof Array ? value_[0] : value_;
+        this._super(value_);
+    },
+    render_value: function() {
+        var values = this.get("values");
+        values = [[false, this.node.attrs.placeholder || '']].concat(values);
+        var found = _.find(values, function(el) {
+            return el[0] === this.get("value");
+        }, this);
+        if (!found) {
+            found = [this.get("value"), _t('Unknown')];
+            values = [found].concat(values);
+        }
+        if (!this.get("effective_readonly")) {
+            this.$el.empty();
+            for (var i = 0; i < values.length; i++) {
+                this.$el.append($('<option/>', {
+                    value: JSON.stringify(values[i][0]),
+                    html: values[i][1]
+                }))
+            }
+            this.$el.val(JSON.stringify(found[0]));
+        } else {
+            this.$el.text(found[1]);
+        }
+    },
+    focus: function() {
+        if (!this.get("effective_readonly")) {
+            return this.$el.focus();
+        }
+        return false;
+    },
+});
+
+
+
+
+var FieldChar = common.AbstractField.extend(common.ReinitializeFieldMixin, {
+    template: 'FieldChar',
+    events: {
+        'change': 'store_dom_value',
+    },
+    init: function(field_manager, node) {
+        this._super(field_manager, node);
+        this.password = this.node.attrs.password === 'True' || this.node.attrs.password === '1';
+    },
+    initialize_content: function() {
+        if (!this.get('effective_readonly') && !this.$input) {
+            this.$input = this.$el;
+        }
+        this.setupFocus(this.$el);
+    },
+    destroy_content: function() {
+        this.$input = undefined;
+    },
+    store_dom_value: function() {
+        if (this.$input && this.is_syntax_valid()) {
+            this.internal_set_value(this.parse_value(this.$input.val()));
+        }
+    },
+    commit_value: function() {
+        this.store_dom_value();
+        return this._super();
+    },
+    render_value: function() {
+        var show_value = this.format_value(this.get('value'), '');
+        if (this.$input) {
+            this.$input.val(show_value);
+        } else {
+            if (this.password) {
+                show_value = new Array(show_value.length + 1).join('*');
+            }
+            this.$el.text(show_value);
+        }
+    },
+    is_syntax_valid: function() {
+        if (this.$input) {
+            try {
+                this.parse_value(this.$input.val(), '');
+            } catch (e) {
+                return false;
+            }
+        }
+        return true;
+    },
+    parse_value: function(val, def) {
+        return formats.parse_value(val, this, def);
+    },
+    format_value: function(val, def) {
+        return formats.format_value(val, this, def);
+    },
+    is_false: function() {
+        return this.get('value') === '' || this._super();
+    },
+    focus: function() {
+        if (this.$input) {
+            return this.$input.focus();
+        }
+        return false;
+    },
+});
